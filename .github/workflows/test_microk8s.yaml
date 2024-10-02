@@ -40,8 +40,6 @@ jobs:
           sg 'microk8s' -c "microk8s.kubectl rollout status --namespace kube-system --watch --timeout=5m deployments/coredns"
           sg 'microk8s' -c "retry --times 3 --delay 5 -- sudo microk8s enable hostpath-storage"
           sg 'microk8s' -c "microk8s.kubectl rollout status --namespace kube-system --watch --timeout=5m deployments/hostpath-provisioner"
-          mkdir ~/.kube/
-          # Used by lightkube and kubernetes (Python package)
       - run: sudo snap install juju
       - run: sudo usermod -a -G microk8s ubuntu
       - run: sg 'microk8s' -c "juju bootstrap microk8s"
