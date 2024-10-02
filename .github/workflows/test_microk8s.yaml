@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install retry -y
-          sudo snap install microk8s --channel='1.31/stable'
+          sudo snap install microk8s --channel='1.31/stable' --classic
           sudo adduser "$USER" 'snap_microk8s'
       - name: (IS hosted) Configure microk8s Docker Hub mirror
         timeout-minutes: 5
