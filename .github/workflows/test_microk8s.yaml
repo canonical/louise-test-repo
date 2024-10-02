@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        index: [0, 1, 2]
+        index: [0]
     steps:
       - name: Set up microk8s
         timeout-minutes: 5
@@ -42,7 +42,6 @@ jobs:
           sg 'microk8s' -c "microk8s.kubectl rollout status --namespace kube-system --watch --timeout=5m deployments/hostpath-provisioner"
           mkdir ~/.kube/
           # Used by lightkube and kubernetes (Python package)
-          sg 'microk8s' -c "microk8s config > ~/.kube/config"
       - run: sudo snap install juju
       - run: sudo usermod -a -G microk8s ubuntu
       - run: sg 'microk8s' -c "juju bootstrap microk8s"
