@@ -18,7 +18,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install retry -y
           sudo snap install microk8s --channel='1.31/stable' --classic
-          sudo adduser "$USER" 'snap_microk8s'
+          sudo adduser "$USER" 'microk8s'
       - name: (IS hosted) Configure microk8s Docker Hub mirror
         timeout-minutes: 5
         run: |
@@ -34,20 +34,17 @@ jobs:
         timeout-minutes: 15
         run: |
           # `newgrp` does not work in GitHub Actions; use `sg` instead
-          sg 'snap_microk8s' -c "microk8s status --wait-ready"
-          sg 'snap_microk8s' -c "retry --times 3 --delay 5 -- sudo microk8s enable dns"
-          sg 'snap_microk8s' -c "microk8s status --wait-ready"
-          sg 'snap_microk8s' -c "microk8s.kubectl rollout status --namespace kube-system --watch --timeout=5m deployments/coredns"
-          sg 'snap_microk8s' -c "retry --times 3 --delay 5 -- sudo microk8s enable hostpath-storage"
-          sg 'snap_microk8s' -c "microk8s.kubectl rollout status --namespace kube-system --watch --timeout=5m deployments/hostpath-provisioner"
+          sg 'microk8s' -c "microk8s status --wait-ready"
+          sg 'microk8s' -c "retry --times 3 --delay 5 -- sudo microk8s enable dns"
+          sg 'microk8s' -c "microk8s status --wait-ready"
+          sg 'microk8s' -c "microk8s.kubectl rollout status --namespace kube-system --watch --timeout=5m deployments/coredns"
+          sg 'microk8s' -c "retry --times 3 --delay 5 -- sudo microk8s enable hostpath-storage"
+          sg 'microk8s' -c "microk8s.kubectl rollout status --namespace kube-system --watch --timeout=5m deployments/hostpath-provisioner"
           mkdir ~/.kube/
           # Used by lightkube and kubernetes (Python package)
-          sg 'snap_microk8s' -c "microk8s config > ~/.kube/config"
+          sg 'microk8s' -c "microk8s config > ~/.kube/config"
       - run: sudo snap install juju
-      - run: sudo usermod -a -G snap_microk8s ubuntu
-      - run: sg 'snap_microk8s' -c "juju bootstrap microk8s"
+      - run: sudo usermod -a -G microk8s ubuntu
+      - run: sg 'microk8s' -c "juju bootstrap microk8s"
       - run: juju add-model test
       - run: juju deploy postgresql-k8s --channel 14/edge --trust
-      - name: Setup tmate session
-        if: failure()
-        uses: canonical/action-tmate@main
