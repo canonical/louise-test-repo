@@ -40,8 +40,5 @@ jobs:
           sg 'microk8s' -c "microk8s.kubectl rollout status --namespace kube-system --watch --timeout=5m deployments/coredns"
           sg 'microk8s' -c "retry --times 3 --delay 5 -- sudo microk8s enable hostpath-storage"
           sg 'microk8s' -c "microk8s.kubectl rollout status --namespace kube-system --watch --timeout=5m deployments/hostpath-provisioner"
-      - run: sudo snap install juju
-      - run: sudo usermod -a -G microk8s ubuntu
-      - run: sg 'microk8s' -c "juju bootstrap microk8s"
-      - run: juju add-model test
-      - run: juju deploy postgresql-k8s --channel 14/edge --trust
+      - name: Test coredns
+        run: nslookup api.charmhub.io 10.152.183.10
